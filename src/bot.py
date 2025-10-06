@@ -59,17 +59,15 @@ class LeakNewsBot:
             time.sleep(60)
 
 if __name__ == "__main__":
-    import sys
-    
     try:
         bot = LeakNewsBot()
-        bot.schedule_posts()
         
         # Тестовая публикация при первом запуске
         print("\n🧪 Тестовая публикация при запуске...")
         asyncio.run(bot.post_news())
         print("✅ Тест завершён, бот продолжает работу по расписанию\n")
         
+        bot.schedule_posts()
     except Exception as e:
         print(f"❌ Критическая ошибка при запуске: {e}")
         raise
