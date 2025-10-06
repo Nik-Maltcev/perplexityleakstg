@@ -18,23 +18,37 @@ class LeakNewsBot:
         self.perplexity = PerplexityClient(os.getenv('PERPLEXITY_API_KEY'))
     
     async def post_news(self):
-        print(f"[{datetime.now()}] Начало публикации...")
-        print(f"[{datetime.now()}] Channel ID: {self.channel_id}")
+        from datetime import datetime as dt
+        print(f"[{dt.now()}] Начало публикации...")
+        print(f"[{dt.now()}] Channel ID: {self.channel_id}")
         
         try:
-            print(f"[{datetime.now()}] Запрос к Perplexity API...")
+            from datetime import datetime as dt, timedelta
+            print(f"[{dt.now()}] Запрос к Perplexity API...")
             news = self.perplexity.get_weekly_leaks_news()
-            print(f"[{datetime.now()}] Получен ответ: {news[:100]}...")
+            print(f"[{dt.now()}] Получен ответ: {news[:100]}...")
             
-            message = f"📰 Новости об утечках данных в РФ за неделю\n\n{news}\n\n#утечки #безопасность #данные"
+            today = dt.now()
+            week_ago = today - timedelta(days=7)
             
-            print(f"[{datetime.now()}] Отправка в Telegram...")
+            message = f"""🛡️ ЕЖЕНЕДЕЛЬНЫЙ ОБЗОР УТЕЧЕК ДАННЫХ
+📅 Период: {week_ago.strftime('%d.%m.%Y')} - {today.strftime('%d.%m.%Y')}
+──────────────────────────────
+
+{news}
+
+──────────────────────────────
+🔒 Защитите свои данные | @data_trace
+
+#кибербезопасность #утечкиданных #инфобез #аналитика"""
+            
+            print(f"[{dt.now()}] Отправка в Telegram...")
             await self.bot.send_message(chat_id=self.channel_id, text=message)
-            print(f"[{datetime.now()}] ✅ Успешно опубликовано")
+            print(f"[{dt.now()}] ✅ Успешно опубликовано")
         except TelegramError as e:
-            print(f"[{datetime.now()}] ❌ Ошибка Telegram: {e}")
+            print(f"[{dt.now()}] ❌ Ошибка Telegram: {e}")
         except Exception as e:
-            print(f"[{datetime.now()}] ❌ Общая ошибка: {e}")
+            print(f"[{dt.now()}] ❌ Общая ошибка: {e}")
     
     def schedule_posts(self):
         schedule.every().monday.at("07:00").do(lambda: asyncio.run(self.post_news()))  # 10:00 MSK = 07:00 UTC
