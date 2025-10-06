@@ -3,6 +3,7 @@ import asyncio
 import schedule
 import time
 from datetime import datetime
+from zoneinfo import ZoneInfo
 from dotenv import load_dotenv
 from telegram import Bot
 from telegram.error import TelegramError
@@ -36,8 +37,12 @@ class LeakNewsBot:
             print(f"[{datetime.now()}] ❌ Общая ошибка: {e}")
     
     def schedule_posts(self):
-        schedule.every().monday.at("10:00").do(lambda: asyncio.run(self.post_news()))
-        schedule.every().thursday.at("10:00").do(lambda: asyncio.run(self.post_news()))
+        schedule.every().monday.at("07:00").do(lambda: asyncio.run(self.post_news()))  # 10:00 MSK = 07:00 UTC
+        schedule.every().thursday.at("07:00").do(lambda: asyncio.run(self.post_news()))
+        
+        msk_tz = ZoneInfo("Europe/Moscow")
+        utc_now = datetime.now()
+        msk_now = datetime.now(msk_tz)
         
         print("="*50)
         print("🤖 Бот запущен успешно!")
@@ -45,7 +50,8 @@ class LeakNewsBot:
         print(f"📅 Расписание публикаций:")
         print("   - Понедельник в 10:00 (МСК)")
         print("   - Четверг в 10:00 (МСК)")
-        print(f"⏰ Текущее время: {datetime.now()}")
+        print(f"⏰ UTC: {utc_now.strftime('%Y-%m-%d %H:%M:%S')}")
+        print(f"⏰ МСК: {msk_now.strftime('%Y-%m-%d %H:%M:%S')}")
         print("="*50)
         
         while True:
